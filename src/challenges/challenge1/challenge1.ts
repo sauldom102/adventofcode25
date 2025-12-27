@@ -9,10 +9,15 @@ class Dial {
     // number of times the dial is equal to 0
     private password: number = 0;
 
+    // number of times the dial clicks 0
+    private passwordPart2: number = 0;
+
     constructor() {}
 
     private rotate(value: number) {
         const length = this.maxValue - this.minValue + 1;
+
+        const wasZeroInitially = this.position === 0;
 
         let spins = Math.floor(Math.abs(value) / length);
         if (value < 0) {
@@ -28,19 +33,35 @@ class Dial {
 
         if (newPosition > this.maxValue) {
             newPosition = this.minValue + (newPosition - this.maxValue) - 1;
+            this.passwordPart2 += 1;
         } else if (newPosition < this.minValue) {
             newPosition += this.maxValue + 1;
+            this.passwordPart2 += 1;
         }
 
         this.position = newPosition;
 
+        const clicking = Math.abs(spins) > 0;
+
+        if (clicking) {
+            const spinsToCount = Math.abs(spins);
+
+            this.passwordPart2 += spinsToCount;
+
+            if (wasZeroInitially) {
+                this.passwordPart2 -= 1;
+            }
+        }
+
         if (newPosition === 0) {
             this.password += 1;
+            this.passwordPart2 += 1;
         }
     }
 
     displayPassword() {
         console.log(`The password is ${this.password}`);
+        console.log(`The password for part 2 is ${this.passwordPart2}`);
     }
 
     runCommand(command: string) {
